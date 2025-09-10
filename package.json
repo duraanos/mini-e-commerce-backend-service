@@ -2,10 +2,10 @@
   "name": "mini_e-commerce_backend_service",
   "version": "1.0.0",
   "description": "",
-  "main": "app.ts",
+  "main": "src/app.ts",
   "scripts": {
-    "start": "ts-node app.ts",
-    "dev": "nodemon --watch app.ts --exec ts-node app.ts",
+  "start": "ts-node src/app.ts",
+  "dev": "nodemon --watch src/app.ts --exec ts-node src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
