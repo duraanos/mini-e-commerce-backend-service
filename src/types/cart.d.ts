@@ -10,3 +10,8 @@ export type Cart = {
   created_at?: string;
   updated_at?: string;
 };
+
+export type AddCartItemInput = {
+  product_id: string;
+  quantity: number;
+};
