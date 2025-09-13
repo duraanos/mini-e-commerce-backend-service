@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import e, { Request, Response } from 'express';
 import { cartService } from '../services/cartService';
 import { AddCartItemInput } from '../types/cart';
 
@@ -79,6 +79,24 @@ export const cartController = {
       const updatedCart = await cartService.removeCartItem(id, productId);
       res.status(200).json(updatedCart);
     } catch (err: unknown) {
+      res
+        .status(500)
+        .json({ error: err instanceof Error ? err.message : String(err) });
+    }
+  },
+  async getCart(req: Request, res: Response): Promise<void> {
+    try {
+      const { cartId } = req.params;
+      console.log(cartId);
+      const cart = await cartService.getCartById(cartId);
+
+      if (!cart) {
+        res.status(400).json({ error: 'Cart not found' });
+        return;
+      }
+
+      res.status(200).json(cart);
+    } catch (err) {
       res
         .status(500)
         .json({ error: err instanceof Error ? err.message : String(err) });
