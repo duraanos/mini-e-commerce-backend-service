@@ -115,4 +115,15 @@ export const cartService = {
     if (updatedError) throw new Error(updatedError.message);
     return updatedCart;
   },
+
+  async getCartById(cartId: string): Promise<Cart | null> {
+    const { data, error } = await supabase
+      .from('carts')
+      .select('id, user_id, items')
+      .eq('id', cartId)
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data;
+  },
 };
