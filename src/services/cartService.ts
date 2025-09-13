@@ -14,6 +14,17 @@ export const cartService = {
   },
 
   async addItemtoCart(cartId: string, item: AddCartItemInput): Promise<Cart> {
+    const { data: product, error: productError } = await supabase
+      .from('products')
+      .select('id, price, stock')
+      .eq('id', item.product_id)
+      .select()
+      .single();
+
+    if (productError || !product) throw new Error('Product not found');
+
+    if (product.stock < item.quantity) throw new Error('Not enough stock');
+
     const { data: cartData, error: fetchError } = await supabase
       .from('carts')
       .select('*')
