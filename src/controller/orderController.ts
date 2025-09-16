@@ -18,4 +18,17 @@ export const orderController = {
         .json({ error: err instanceof Error ? err.message : String(err) });
     }
   },
+
+  async getAllOrders(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any).user.id;
+      const orders = await orderService.getAllOrders(userId);
+
+      res.json(orders);
+    } catch (err) {
+      res
+        .status(500)
+        .json({ error: err instanceof Error ? err.message : String(err) });
+    }
+  },
 };
