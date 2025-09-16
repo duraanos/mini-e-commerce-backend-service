@@ -31,4 +31,23 @@ export const orderController = {
         .json({ error: err instanceof Error ? err.message : String(err) });
     }
   },
+
+  async getOrderById(req: Request, res: Response): Promise<void> {
+    try {
+      const { orderId } = req.params;
+      const userId = (req as any).user.id;
+
+      if (!userId) res.status(401).json({ error: 'Unauthorized' });
+
+      const order = await orderService.getOrderById(orderId, userId);
+
+      if (!order) res.status(404).json({ error: 'Order not found' });
+
+      res.json(order);
+    } catch (err: unknown) {
+      res
+        .status(500)
+        .jsonp({ error: err instanceof Error ? err.message : String(err) });
+    }
+  },
 };
