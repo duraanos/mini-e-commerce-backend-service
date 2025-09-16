@@ -1,5 +1,5 @@
 import { supabase } from '../config/db';
-import { Order, CreateOrderInput } from '../types/order';
+import { Order, CreateOrderInput, OrderUpdateData } from '../types/order';
 
 export const orderService = {
   async creteOrder({ userId, cartId }: CreateOrderInput): Promise<Order> {
@@ -47,6 +47,22 @@ export const orderService = {
     const { data, error } = await supabase
       .from('orders')
       .select('*')
+      .eq('id', orderId)
+      .eq('user_id', userId)
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data as Order;
+  },
+
+  async updateOrder(
+    userId: string,
+    orderId: string,
+    updateData: OrderUpdateData
+  ): Promise<Order> {
+    const { data, error } = await supabase
+      .from('orders')
+      .update(updateData)
       .eq('id', orderId)
       .eq('user_id', userId)
       .single();
