@@ -50,4 +50,22 @@ export const orderController = {
         .jsonp({ error: err instanceof Error ? err.message : String(err) });
     }
   },
+
+  async updateOrder(req: Request, res: Response): Promise<void> {
+    try {
+      const { orderId } = req.params;
+      const userId = (req as any).user.id;
+
+      const updatedOrder = await orderService.updateOrder(
+        userId,
+        orderId,
+        req.body
+      );
+      res.json(updatedOrder);
+    } catch (err) {
+      res
+        .status(500)
+        .json({ error: err instanceof Error ? err.message : String(err) });
+    }
+  },
 };
