@@ -68,4 +68,18 @@ export const orderController = {
         .json({ error: err instanceof Error ? err.message : String(err) });
     }
   },
+
+  async deleteOrder(req: Request, res: Response): Promise<void> {
+    try {
+      const { orderId } = req.params;
+      const userId = (req as any).user.id;
+
+      await orderService.deleteOrder(userId, orderId);
+      res.status(204).send();
+    } catch (err) {
+      res
+        .status(500)
+        .json({ error: err instanceof Error ? err.message : String(err) });
+    }
+  },
 };
