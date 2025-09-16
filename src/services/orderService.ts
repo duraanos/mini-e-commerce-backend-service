@@ -42,4 +42,16 @@ export const orderService = {
 
     return data as Order[];
   },
+
+  async getOrderById(orderId: string, userId: string): Promise<Order> {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('id', orderId)
+      .eq('user_id', userId)
+      .single();
+
+    if (error) throw new Error(error.message);
+    return data as Order;
+  },
 };
