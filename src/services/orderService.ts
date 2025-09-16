@@ -31,4 +31,15 @@ export const orderService = {
     if (orderError || !order) throw new Error('Order not found');
     return order as Order;
   },
+
+  async getAllOrders(userId: string): Promise<Order[]> {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('user_id', userId);
+
+    if (error || !data) throw new Error(error.message);
+
+    return data as Order[];
+  },
 };
