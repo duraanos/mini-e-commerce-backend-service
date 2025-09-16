@@ -70,4 +70,15 @@ export const orderService = {
     if (error) throw new Error(error.message);
     return data as Order;
   },
+
+  async deleteOrder(userId: string, orderId: string): Promise<void> {
+    const { error } = await supabase
+      .from('orders')
+      .delete()
+      .eq('id', orderId)
+      .eq('user_id', userId)
+      .single();
+
+    if (error) throw new Error(error.message);
+  },
 };
