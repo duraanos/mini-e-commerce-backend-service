@@ -2,7 +2,7 @@ import { supabase } from '../config/db';
 import { Order, CreateOrderInput, OrderUpdateData } from '../types/order';
 
 export const orderService = {
-  async creteOrder({ userId, cartId }: CreateOrderInput): Promise<Order> {
+  async createOrder({ userId, cartId }: CreateOrderInput): Promise<Order> {
     const { data: cart, error: cartError } = await supabase
       .from('carts')
       .select('items')

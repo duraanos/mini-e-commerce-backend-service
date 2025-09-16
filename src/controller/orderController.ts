@@ -10,7 +10,7 @@ export const orderController = {
       if (!userId || !cartId)
         res.status(400).json({ error: 'userId and cartId are required ' });
 
-      const order = await orderService.creteOrder({ userId, cartId });
+      const order = await orderService.createOrder({ userId, cartId });
       res.status(201).json(order);
     } catch (err: unknown) {
       res
