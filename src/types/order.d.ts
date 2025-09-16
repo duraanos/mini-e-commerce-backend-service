@@ -21,3 +21,7 @@ export type CreateOrderInput = {
   userId: string;
   cartId: string;
 };
+
+export type OrderUpdateData = Partial<
+  Omit<Order, 'id' | 'userId' | 'cartId' | 'createAt'>
+>;
