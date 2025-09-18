@@ -1,5 +1,5 @@
 export type CartItem = {
-  product_id: string;
+  productId: string;
   quantity: number;
 };
 
@@ -12,6 +12,7 @@ export type Cart = {
 };
 
 export type AddCartItemInput = {
-  product_id: string;
+  productId: string;
+  price: number;
   quantity: number;
 };
