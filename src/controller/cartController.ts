@@ -29,7 +29,7 @@ export const cartController = {
       const { id } = req.params;
       const item = req.body;
 
-      if (!item.product_id || !item.product_id) {
+      if (!item.productId || !item.quantity) {
         res.status(400).json({ error: 'product_id and quantity are required' });
         return;
       }
