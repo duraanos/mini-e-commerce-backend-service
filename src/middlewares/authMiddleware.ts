@@ -26,7 +26,8 @@ export const authenticate = async (
     if (!decoded)
       return res.status(403).json({ error: 'Invalid token payload' });
 
-    (req as any).user = { id: decoded.id };
+    (req as any).user = { id: decoded };
+    next();
   } catch (err) {
     res.status(401).json({ error: 'Invalid token' });
   }
