@@ -17,7 +17,7 @@ export const cartService = {
     const { data: product, error: productError } = await supabase
       .from('products')
       .select('id, price, stock')
-      .eq('id', item.product_id)
+      .eq('id', item.productId)
       .select()
       .single();
 
@@ -31,20 +31,22 @@ export const cartService = {
       .eq('id', cartId)
       .single();
 
-    console.log(cartData);
     if (fetchError || !cartData) throw new Error('Cart not found');
 
     const updatedItems = [...cartData.items];
-    console.log(updatedItems);
+
+    const itemWithPrice = {
+      ...item,
+      price: product.price,
+    };
 
     const existingIndex = updatedItems.findIndex(
-      i => i.product_id === item.product_id
+      i => i.product_id === item.productId
     );
-    console.log(existingIndex);
 
     existingIndex >= 0
       ? (updatedItems[existingIndex].quantity += item.quantity)
-      : updatedItems.push(item);
+      : updatedItems.push(itemWithPrice);
 
     const { data: updatedCart, error: updatedError } = await supabase
       .from('carts')
