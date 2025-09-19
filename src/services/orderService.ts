@@ -19,10 +19,10 @@ export const orderService = {
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
-        userId,
-        cartId,
+        user_id: userId,
+        cart_id: cartId,
         items: cart.items,
-        totalPrice,
+        total_price: totalPrice,
         status: 'pending',
       })
       .select()
