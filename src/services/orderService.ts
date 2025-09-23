@@ -71,6 +71,18 @@ export const orderService = {
     return data as Order;
   },
 
+  async updateOrderStatus(orderId: string, status: string): Promise<Order> {
+    const { data, error } = await supabase
+      .from('orders')
+      .update({ status })
+      .eq('id', orderId)
+      .single();
+
+    if (error) throw new Error('Order not found');
+
+    return data as Order;
+  },
+
   async deleteOrder(userId: string, orderId: string): Promise<void> {
     const { error } = await supabase
       .from('orders')
