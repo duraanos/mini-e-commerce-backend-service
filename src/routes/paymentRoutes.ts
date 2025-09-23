@@ -4,6 +4,10 @@ import { authenticate } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-router.post('/create', authenticate, paymentController.createPaymentIntent);
+router.post(
+  '/create-payment-intent',
+  authenticate,
+  paymentController.createPaymentIntent
+);
 
 export default router;
