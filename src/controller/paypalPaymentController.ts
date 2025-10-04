@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { paymentService } from '../services/paymentService';
+import { paymentService } from '../services/paypalPaymentService';
 import { PaymentRequest } from '../types/payment';
 
 export const paymentController = {
