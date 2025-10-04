@@ -4,8 +4,8 @@ import productRoutes from './routes/productRoutes';
 import cartRoutes from './routes/cartRoutes';
 import authRoutes from './routes/authRoutes';
 import orderRoutes from './routes/orderRoutes';
-import paymentRoutes from './routes/paymentRoutes';
-import webhookRoutes from './routes/webhookRoutes';
+import paymentRoutes from './routes/stripePaymentRoutes';
+import webhookRoutes from './routes/stripeWebhookRoutes';
 
 dotenv.config();
 

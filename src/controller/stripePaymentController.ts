@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { paymentService } from '../services/paymentService';
+import { paymentService } from '../services/stripePaymentService';
 
 export const paymentController = {
   async createPaymentIntent(req: Request, res: Response): Promise<void> {

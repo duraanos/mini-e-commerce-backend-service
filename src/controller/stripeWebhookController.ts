@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { webhookService } from '../services/webhookService';
+import { webhookService } from '../services/stripeWebhookService';
 
 export const webhookController = {
   async handleWebhook(req: Request, res: Response): Promise<void> {

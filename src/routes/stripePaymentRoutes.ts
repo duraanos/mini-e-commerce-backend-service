@@ -1,5 +1,5 @@
 import express from 'express';
-import { paymentController } from '../controller/paymentController';
+import { paymentController } from '../controller/stripePaymentController';
 import { authenticate } from '../middlewares/authMiddleware';
 
 const router = express.Router();
