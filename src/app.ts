@@ -5,7 +5,7 @@ import cartRoutes from './routes/cartRoutes';
 import authRoutes from './routes/authRoutes';
 import orderRoutes from './routes/orderRoutes';
 import paymentRoutes from './routes/paymentRoutes';
-import webhookRoutes from './routes/webhookRoutes';
+import webhookRoutes from './routes/paypalWebhookRoutes';
 
 dotenv.config();
 
