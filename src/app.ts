@@ -12,7 +12,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use('/webhook', express.raw({ type: 'application/json' }));
+app.use(
+  '/api/webhook',
+  express.raw({ type: 'application/json' }),
+  webhookRoutes
+);
 
 app.use(express.json());
 
@@ -21,7 +25,6 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use('/api/webhook', webhookRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
