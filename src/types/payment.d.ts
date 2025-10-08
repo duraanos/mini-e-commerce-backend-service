@@ -12,4 +12,6 @@ export type CreatePaymentIntent = {
 
 export type PaymentIntentResponse = {
   clientSecret: string;
+  successUrl: string;
+  cancelUrl: string;
 };
