@@ -52,6 +52,8 @@ export const paymentService = {
 
     return {
       clientSecret: paymentIntent.client_secret as string,
+      successUrl: 'http://localhost:3000/success.html',
+      cancelUrl: 'http://localhost:3000/cancel.html',
     };
   },
 };
