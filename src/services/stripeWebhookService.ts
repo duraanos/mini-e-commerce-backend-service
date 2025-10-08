@@ -1,9 +1,6 @@
 import { supabase } from '../config/db';
 import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
-  apiVersion: '2025-08-27.basil',
-});
+import stripe from '../config/stripe';
 
 export const webhookService = {
   async handleStripeWebhookEvent(
@@ -24,8 +21,11 @@ export const webhookService = {
         try {
           await supabase
             .from('payments')
-            .update({ status: 'succeeded' })
-            .eq('stripe_payment_id', paymentIntent.id);
+            .update({
+              status: 'succeeded',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('payment_id', paymentIntent.id);
 
           await supabase
             .from('orders')
@@ -37,13 +37,22 @@ export const webhookService = {
         break;
       }
       case 'payment_intent.payment_failed': {
-        const paymnetIntent = event.data.object as Stripe.PaymentIntent;
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        const orderId = paymentIntent.metadata?.orderId;
 
         try {
           await supabase
             .from('payments')
-            .update({ status: 'failed' })
-            .eq('stripe_payment_id', paymnetIntent.id);
+            .update({ status: 'failed', updated_at: new Date().toISOString() })
+            .eq('payment_id', paymentIntent.id);
+
+          await supabase
+            .from('orders')
+            .update({
+              status: 'cancelled',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', orderId);
         } catch (dbErr) {
           console.error('DB updated in webhook failed', dbErr);
         }
