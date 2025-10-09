@@ -32,12 +32,7 @@ export const webhookService = {
   },
   async verifyPayPalSignature(req: Request): Promise<boolean> {
     try {
-      const environment = new paypal.core.SandboxEnvironment(
-        env.PAYPAL_CLIENT_ID,
-        env.PAYPAL_CLIENT_SECRET
-      );
-
-      const client = new paypal.core.PayPalHttpClient(environment);
+      const accessToken = await this.generateTokenAccess();
 
       const transmissionId = req.headers['paypal-transmission-id'] as string;
       const transmissionSig = req.headers['paypal-transmission-sig'] as string;
@@ -68,12 +63,18 @@ export const webhookService = {
         webhook_event: req.body,
       };
 
-      const request = new paypal.notifications.VerifyWebhookSignatureRequest();
-      request.requestBody(verifyRequest);
+      const response = await axios.post(
+        `${env.PAYPAL_BASE_URL}/v1/notifications/verify-webhook-signature`,
+        verifyRequest,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      const response = await client.execute(request);
-
-      const verified = response.result.verification_status === 'SUCCESS';
+      const verified = response.data.verification.status === 'SUCCESS';
 
       if (!verified) console.error('Paypal webhook signature failed');
 
