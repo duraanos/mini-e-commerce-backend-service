@@ -1,10 +1,35 @@
 import paypal from '@paypal/checkout-server-sdk';
+import axios from 'axios';
 import { supabase } from '../config/db';
 import { Request } from 'express';
 import { env } from '../config/env';
 import { PayPalWebhookEvent, PayPalWebhookResult } from '../types/payment';
 
 export const webhookService = {
+  async generateTokenAccess() {
+    try {
+      const auth = Buffer.from(
+        `${env.PAYPAL_CLIENT_ID}:${env.PAYPAL_CLIENT_SECRET}`
+      ).toString('base64');
+      const response = await axios.post(
+        `${env.PAYPAL_BASE_URL}/v1/oauth2/token`,
+        'grant_type=client_credentials',
+        {
+          headers: {
+            Authorization: `Basic ${auth}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+
+      return response.data.access_token;
+    } catch (err: unknown) {
+      console.error(
+        'Error getting access token:',
+        err instanceof Error ? err.message : String(err)
+      );
+    }
+  },
   async verifyPayPalSignature(req: Request): Promise<boolean> {
     try {
       const environment = new paypal.core.SandboxEnvironment(
