@@ -1,4 +1,5 @@
 import paypal from '@paypal/checkout-server-sdk';
+import { supabase } from '../config/db';
 import { Request } from 'express';
 import { env } from '../config/env';
 import { PayPalWebhookEvent, PayPalWebhookResult } from '../types/payment';
@@ -62,16 +63,51 @@ export const webhookService = {
     event: PayPalWebhookEvent
   ): Promise<PayPalWebhookResult> {
     const eventType = event.eventType;
+    const orderId = event.resource.invoiceId;
 
     switch (eventType) {
       case 'PAYMENT.CAPTURE.COMPLETED':
         console.log('Payment successful:', event.resource);
-        // Update orders and payments tables
+
+        try {
+          await supabase
+            .from('payments')
+            .update({
+              status: 'succeeded',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('payment_id', event.resource.id);
+
+          await supabase
+            .from('orders')
+            .update({ status: 'paid', updated_at: new Date().toISOString() })
+            .eq('id', orderId);
+        } catch (dbErr: unknown) {
+          console.error('DB updated in webhook failed', dbErr);
+        }
+
         return { status: 'success', message: 'Payment completed' };
 
       case 'PAYMENT.CAPTURE.DENIED':
         console.log('Payment failed:', event.resource);
-        // Update orders and payments tables
+
+        try {
+          await supabase
+            .from('payments')
+            .update({ status: 'failed', updated_at: new Date().toISOString() })
+            .eq('payment_id', event.resource.id);
+
+          await supabase
+            .from('orders')
+            .update({
+              status: 'payment_failed',
+              updated_at: new Date().toISOString(),
+            })
+            .eq('id', orderId);
+        } catch (dbErr: unknown) {
+          console.error('DB updated in webhook failed', dbErr);
+        }
+
         return { status: 'failed', message: 'Payment failed' };
 
       default:
