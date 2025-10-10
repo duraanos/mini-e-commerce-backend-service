@@ -4,7 +4,7 @@ import { authenticate } from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-router.post('/', orderController.createOrder);
+router.post('/', authenticate, orderController.createOrder);
 router.get('/', authenticate, orderController.getAllOrders);
 router.get('/:orderId', authenticate, orderController.getOrderById);
 router.patch('/:orderId', authenticate, orderController.updateOrder);
