@@ -1,5 +1,6 @@
 import { supabase } from '../config/db';
 import paypalClient from '../config/paypal';
+import paypal from '@paypal/checkout-server-sdk';
 
 export const paymentService = {
   async calculateAmountForOrder(orderId: string): Promise<number> {
@@ -14,11 +15,11 @@ export const paymentService = {
     return order.total_price;
   },
 
-  async createPayPalOrder(userId: string, orderId: string): Promise<string> {
+  async createPayPalOrder(userId: string, orderId: string): Promise<object> {
     const amount = await paymentService.calculateAmountForOrder(orderId);
     if (amount <= 0) throw new Error('Invalid amount');
 
-    const request = new paypalClient.orders.OrdersCreateRequest();
+    const request = new paypal.orders.OrdersCreateRequest();
     request.prefer('return=representation');
     request.requestBody({
       intent: 'CAPTURE',
@@ -27,7 +28,7 @@ export const paymentService = {
           invoice_id: orderId,
           custom_id: userId,
           amount: {
-            currency_mode: 'usd',
+            currency_code: 'usd',
             value: amount.toFixed(2),
           },
         },
@@ -35,6 +36,10 @@ export const paymentService = {
     });
 
     const response = await paypalClient.execute(request);
-    return response.result.id;
+    return {
+      approvalUrl: response.result.links.find(
+        (link: { rel: string }) => link.rel === 'approve'
+      ).href,
+    };
   },
 };
