@@ -1,4 +1,3 @@
-import paypal from '@paypal/checkout-server-sdk';
 import axios from 'axios';
 import { supabase } from '../config/db';
 import { Request } from 'express';
