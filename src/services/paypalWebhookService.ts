@@ -1,12 +1,39 @@
+import axios from 'axios';
 import { Request } from 'express';
-import { env } from '../config/env';
-import payPalClient from '../config/paypal';
-import { PayPalWebhookEvent, PayPalWebhookResult } from '../types/payment';
 import { supabase } from '../config/db';
+import { env } from '../config/env';
+import { PayPalWebhookEvent, PayPalWebhookResult } from '../types/payment';
 
 export const paypalWebhookService = {
+  async generateToken() {
+    try {
+      const auth = Buffer.from(
+        `${env.PAYPAL_CLIENT_ID}:${env.PAYPAL_CLIENT_SECRET}`
+      ).toString('base64');
+      const response = await axios.post(
+        `${env.PAYPAL_BASE_URL}/v1/oauth2/token`,
+        'grant_type=client_credentials',
+        {
+          headers: {
+            Authorization: `Basic ${auth}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+
+      return response.data.access_token;
+    } catch (err: unknown) {
+      console.error(
+        'Error getting access token',
+        err instanceof Error ? err.message : String(err)
+      );
+    }
+  },
+
   async verifyPayPalSignature(req: Request): Promise<boolean> {
     try {
+      const accessToken = await this.generateToken();
+
       const requiredHeaders = [
         'paypal-transmission-id',
         'paypal-transmission-sig',
@@ -36,15 +63,22 @@ export const paypalWebhookService = {
         transmission_time: transmissionTime,
         cert_url: certUrl,
         auth_algo: authAlgo,
+        webhook_id: env.PAYPAL_WEBHOOK_ID,
+        webhook_event: req.body,
       };
 
-      const request =
-        new payPalClient.notifications.VerifyWebhookSignatureRequst();
-      request.requestBody(verifyRequest);
+      const response = await axios.post(
+        `${env.PAYPAL_BASE_URL}/v1/notifications/verif-webhook-signature`,
+        verifyRequest,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
 
-      const response = await payPalClient.execute(request);
-
-      const verified = response.result.verification_status === 'SUCCESS';
+      const verified = response.data.verification_status === 'SUCCESS';
 
       if (!verified) console.error('PayPal webhook signature failed');
       return verified;
