@@ -5,7 +5,8 @@ import { CreateOrderInput } from '../types/order';
 export const orderController = {
   async createOrder(req: Request, res: Response): Promise<void> {
     try {
-      const { userId, cartId } = req.body as CreateOrderInput;
+      const userId = (req as any).user.id;
+      const { cartId } = req.body as CreateOrderInput;
 
       if (!userId || !cartId)
         res.status(400).json({ error: 'userId and cartId are required ' });
@@ -53,8 +54,8 @@ export const orderController = {
 
   async updateOrder(req: Request, res: Response): Promise<void> {
     try {
-      const { orderId } = req.params;
       const userId = (req as any).user.id;
+      const { orderId } = req.params;
 
       const updatedOrder = await orderService.updateOrder(
         userId,
@@ -71,8 +72,8 @@ export const orderController = {
 
   async deleteOrder(req: Request, res: Response): Promise<void> {
     try {
-      const { orderId } = req.params;
       const userId = (req as any).user.id;
+      const { orderId } = req.params;
 
       await orderService.deleteOrder(userId, orderId);
       res.status(204).send();
