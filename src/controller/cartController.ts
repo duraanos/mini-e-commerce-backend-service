@@ -5,7 +5,7 @@ import { AddCartItemInput } from '../types/cart';
 export const cartController = {
   async createCart(req: Request, res: Response): Promise<void> {
     try {
-      const { userId } = req.body;
+      const userId = (req as any).user.id;
 
       if (!userId) {
         res.status(400).json({ error: 'userId is required' });
